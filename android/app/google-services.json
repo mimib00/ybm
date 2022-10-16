@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "972144799000",
+    "project_id": "ybm-2-c7f94",
+    "storage_bucket": "ybm-2-c7f94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972144799000:android:dd7e9321aa3dbe97c1826d",
+        "android_client_info": {
+          "package_name": "com.shaderbytes.ybm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "972144799000-62efk6dk490pv0uh9n9a89ucinrk0hai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJRx2Kj4EPo2at9ho8i8TU9DnXS87e4Eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "972144799000-62efk6dk490pv0uh9n9a89ucinrk0hai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ybm/meta/utils/constants.dart';
+import 'package:ybm/meta/utils/math_utils.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final String text;
@@ -7,6 +10,10 @@ class CustomTextFormField extends StatefulWidget {
   final Color? fillColor;
   final Widget? prefix;
   final Widget? suffix;
+  final TextInputType keyboard;
+  final String? Function(String? value)? validator;
+  final int lines;
+
   const CustomTextFormField({
     super.key,
     required this.controller,
@@ -15,6 +22,9 @@ class CustomTextFormField extends StatefulWidget {
     this.fillColor = const Color(0xffF0F0F0),
     this.prefix,
     this.suffix,
+    this.keyboard = TextInputType.text,
+    this.validator,
+    this.lines = 1,
   });
 
   @override
@@ -35,9 +45,18 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return TextFormField(
       controller: widget.controller,
       obscureText: obscure,
+      keyboardType: widget.keyboard,
+      validator: widget.validator,
+      cursorColor: textColor,
+      maxLines: widget.lines,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        contentPadding: const EdgeInsets.all(10),
         hintText: widget.text,
+        hintStyle: GoogleFonts.nunito(
+          fontWeight: FontWeight.w400,
+          fontSize: getFontSize(14),
+          color: textColor,
+        ),
         fillColor: widget.fillColor,
         filled: true,
         prefixIcon: widget.prefix,

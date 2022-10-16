@@ -10,8 +10,8 @@ import 'package:ybm/meta/widgets/custom_text_form_field.dart';
 import 'package:ybm/meta/widgets/gradient_text.dart';
 import 'package:ybm/views/auth/controller/auth_controller.dart';
 
-class LoginScreen extends GetView<AuthController> {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends GetView<AuthController> {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,69 +29,111 @@ class LoginScreen extends GetView<AuthController> {
         ),
       ),
       body: Form(
-        key: controller.loginForm,
+        key: controller.registerForm,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: getHorizontalSize(20)),
           child: ListView(
             physics: const BouncingScrollPhysics(),
             children: [
               SizedBox(
-                height: getVerticalSize(50),
+                height: getVerticalSize(30),
               ),
               GradientText(
-                'Login',
+                'Sign Up',
                 style: GoogleFonts.poppins(
                   fontSize: getFontSize(32),
                   fontWeight: FontWeight.w500,
                 ),
                 gradient: gradientColor,
               ),
-              SizedBox(height: getVerticalSize(2)),
+              SizedBox(
+                height: getVerticalSize(2),
+              ),
               Text(
-                'Enter account details',
+                'Add your details to create an account',
                 style: GoogleFonts.poppins(
                   fontSize: getFontSize(16),
                   fontWeight: FontWeight.w400,
                   color: textColor,
                 ),
               ),
-              SizedBox(height: getVerticalSize(25)),
+              SizedBox(
+                height: getVerticalSize(25),
+              ),
               CustomTextFormField(
-                controller: controller.email,
-                text: 'Username',
+                controller: controller.name,
+                text: 'Full Name',
                 prefix: Image.asset('assets/images/userIcon.png'),
+                keyboard: TextInputType.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Must enter a name";
+                  return null;
+                },
               ),
               SizedBox(
                 height: getVerticalSize(25),
               ),
               CustomTextFormField(
-                text: 'Password',
-                controller: controller.password,
-                prefix: Image.asset('assets/images/passwordIcon.png'),
-                obscure: true,
+                controller: controller.username,
+                text: 'Username',
+                prefix: Image.asset('assets/images/userIcon.png'),
+                keyboard: TextInputType.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Must enter a username";
+                  return null;
+                },
               ),
               SizedBox(
-                height: getVerticalSize(14),
+                height: getVerticalSize(20),
               ),
-              GestureDetector(
-                onTap: () => Get.toNamed(Routes.forgetPassword),
-                child: Text(
-                  'Forget password',
-                  style: GoogleFonts.poppins(
-                    fontStyle: FontStyle.italic,
-                    fontSize: getFontSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: secondaryColor,
-                  ),
-                ),
+              CustomTextFormField(
+                controller: controller.email,
+                text: 'Email',
+                prefix: const Icon(Icons.email_outlined),
+                keyboard: TextInputType.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Must enter a Email";
+                  if (!value.isEmail) return "Email not valid";
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: getVerticalSize(25),
+              ),
+              CustomTextFormField(
+                controller: controller.phone,
+                text: 'Phone Number',
+                prefix: Image.asset('assets/images/phoneIcon.png'),
+                keyboard: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Must enter a phone";
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: getVerticalSize(25),
+              ),
+              CustomTextFormField(
+                controller: controller.password,
+                text: 'Password',
+                prefix: Image.asset('assets/images/passwordIcon.png'),
+                obscure: true,
+                keyboard: TextInputType.visiblePassword,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Must enter a password";
+                  if (value.length < 8) return "Password must be 8 or more characters";
+                  return null;
+                },
               ),
               SizedBox(
                 height: getVerticalSize(30),
               ),
               CustomElevatedButton(
-                text: 'Login',
+                text: 'Next',
                 onPressed: () {
-                  Get.toNamed(Routes.root);
+                  if (controller.registerForm.currentState!.validate()) {
+                    Get.toNamed(Routes.company);
+                  }
                 },
               ),
               SizedBox(
@@ -100,12 +142,11 @@ class LoginScreen extends GetView<AuthController> {
               Row(
                 children: [
                   const Expanded(
-                    child: Divider(
-                      height: 1,
-                      thickness: 2,
-                      color: Color(0xffC4C4C4),
-                    ),
-                  ),
+                      child: Divider(
+                    height: 1,
+                    thickness: 2,
+                    color: Color(0xffC4C4C4),
+                  )),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
@@ -118,11 +159,12 @@ class LoginScreen extends GetView<AuthController> {
                     ),
                   ),
                   const Expanded(
-                      child: Divider(
-                    height: 1,
-                    thickness: 2,
-                    color: Color(0xffC4C4C4),
-                  ))
+                    child: Divider(
+                      height: 1,
+                      thickness: 2,
+                      color: Color(0xffC4C4C4),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(
@@ -171,18 +213,20 @@ class LoginScreen extends GetView<AuthController> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: GoogleFonts.nunito(
-                    fontSize: getFontSize(14),
-                  ),
-                  children: [
-                    const TextSpan(text: "Don’t have an account? ", style: TextStyle(color: Colors.black)),
-                    TextSpan(
-                      text: "SIGN UP",
-                      recognizer: TapGestureRecognizer()..onTap = () => Get.offAllNamed(Routes.register),
-                      style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.nunito(
+                      fontSize: getFontSize(14),
                     ),
-                  ],
-                ),
+                    children: [
+                      const TextSpan(text: "Don’t have an account? ", style: TextStyle(color: Colors.black)),
+                      TextSpan(
+                        text: "SIGN IN",
+                        recognizer: TapGestureRecognizer()..onTap = () => Get.offAllNamed(Routes.login),
+                        style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w700),
+                      ),
+                    ]),
+              ),
+              SizedBox(
+                height: getVerticalSize(20),
               ),
             ],
           ),

@@ -49,6 +49,11 @@ dependencies:
   percent_indicator: ^4.2.2
   remixicon: ^1.0.0
   flutter_rating_bar: ^4.0.1
+  image_picker: ^0.8.6
+  location: ^4.4.0
+  google_maps_place_picker_mb: ^2.0.0-mb.22
+  google_maps_flutter: ^2.2.1
+  fluttertoast: ^8.1.1
 
 dev_dependencies:
   flutter_test:
