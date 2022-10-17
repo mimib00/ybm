@@ -11,6 +11,8 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ybm/core/controllers/location_controller.dart';
 import 'package:ybm/core/routes/routes.dart';
+import 'package:ybm/meta/models/business.dart';
+import 'package:ybm/meta/models/user.dart';
 import 'package:ybm/meta/widgets/loading.dart';
 
 class AuthController extends GetxController {
@@ -45,6 +47,8 @@ class AuthController extends GetxController {
   RxList<File> photos = <File>[].obs;
 
   RxList<File> proof = <File>[].obs;
+
+  Users? user;
 
   Completer<GoogleMapController> mapController = Completer();
   CameraPosition get cameraPosition => CameraPosition(
@@ -101,10 +105,91 @@ class AuthController extends GetxController {
     update();
   }
 
+  Future<void> login() async {
+    try {
+      Get.dialog(const Loading(message: "Loging in"), barrierDismissible: false);
+      // get user email.
+      final email = await getUserEmail(username.text.trim());
+      if (email == null) {
+        Fluttertoast.showToast(msg: "Username doesn't exists", backgroundColor: Colors.red);
+        return;
+      }
+      // login user.
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password.text.trim());
+      Get.back();
+    } on FirebaseException catch (e) {
+      Get.back();
+      log(e.message.toString());
+      Fluttertoast.showToast(msg: e.code, backgroundColor: Colors.red);
+    }
+  }
+
+  Future<void> getUserInfo() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser!;
+      final userSnap = await FirebaseFirestore.instance.collection("users").doc(currentUser.uid).get();
+      final businessSnap = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("businesses")
+          .withConverter(
+            fromFirestore: (snapshot, options) => Business.fromJson(
+              {
+                ...snapshot.data()!,
+                "id": snapshot.id,
+              },
+            ),
+            toFirestore: (value, options) => {},
+          )
+          .get();
+      if (!userSnap.exists || businessSnap.docs.isEmpty) {
+        Fluttertoast.showToast(msg: "couldn't find user data", backgroundColor: Colors.red);
+        await FirebaseAuth.instance.signOut();
+        return;
+      }
+
+      List<Business> businesses = [];
+
+      for (var business in businessSnap.docs) {
+        businesses.add(business.data());
+      }
+
+      user = Users.fromJason(
+        {
+          ...userSnap.data()!,
+          "uid": currentUser.uid,
+        },
+        businesses,
+      );
+    } on FirebaseException catch (e) {
+      log(e.message.toString());
+      Fluttertoast.showToast(msg: e.code, backgroundColor: Colors.red);
+    }
+  }
+
+  /// Takes a [username] and return the email address for that username
+  /// or return null if it didn't find a user with this [username]
+  Future<String?> getUserEmail(String username) async {
+    try {
+      final snap = await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: username).get();
+      if (snap.docs.isEmpty) return null;
+      return snap.docs.first.data()["email"];
+    } on FirebaseException catch (e) {
+      Get.back();
+      log(e.message.toString());
+      Fluttertoast.showToast(msg: e.code, backgroundColor: Colors.red);
+      return null;
+    }
+  }
+
   Future<void> register() async {
     final storageRef = FirebaseStorage.instance.ref();
     try {
       Get.dialog(const Loading(message: "Creating Account"), barrierDismissible: false);
+      if (await getUserEmail(username.text.trim()) != null) {
+        Fluttertoast.showToast(msg: "Username already exists", backgroundColor: Colors.red);
+        return;
+      }
       // gather user data
       Map<String, dynamic> userData = {
         "created_at": FieldValue.serverTimestamp(),
@@ -118,7 +203,7 @@ class AuthController extends GetxController {
         "business_name": businessName.text.trim(),
         "business_description": businessDescription.text.trim(),
         "business_address": businessAddress.text.trim(),
-        "business_category": businessAddress.text.trim(),
+        "business_category": businessCategory.text.trim(),
         "business_image": null,
         "tags": tags,
         "location": GeoPoint(location.value!.latitude, location.value!.longitude),

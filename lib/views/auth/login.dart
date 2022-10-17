@@ -57,7 +57,7 @@ class LoginScreen extends GetView<AuthController> {
               ),
               SizedBox(height: getVerticalSize(25)),
               CustomTextFormField(
-                controller: controller.email,
+                controller: controller.username,
                 text: 'Username',
                 prefix: Image.asset('assets/images/userIcon.png'),
               ),
@@ -91,7 +91,7 @@ class LoginScreen extends GetView<AuthController> {
               CustomElevatedButton(
                 text: 'Login',
                 onPressed: () {
-                  Get.toNamed(Routes.root);
+                  controller.login();
                 },
               ),
               SizedBox(
