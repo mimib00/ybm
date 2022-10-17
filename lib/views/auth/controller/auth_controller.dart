@@ -27,7 +27,7 @@ class AuthController extends GetxController {
 
   final name = TextEditingController();
   final username = TextEditingController();
-  final phone = TextEditingController();
+  String phone = "";
 
   final businessName = TextEditingController();
   final businessDescription = TextEditingController();
@@ -195,7 +195,7 @@ class AuthController extends GetxController {
         "created_at": FieldValue.serverTimestamp(),
         "name": name.text.trim(),
         "email": email.text.trim(),
-        "phone": phone.text.trim(),
+        "phone": phone.trim(),
         "username": username.text.trim(),
       };
       Map<String, dynamic> businessData = {
@@ -315,7 +315,7 @@ class AuthController extends GetxController {
   void reset() {
     name.clear();
     email.clear();
-    phone.clear();
+    phone = "";
     username.clear();
     businessName.clear();
     businessDescription.clear();

@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:ybm/core/routes/routes.dart';
 import 'package:ybm/meta/utils/constants.dart';
 import 'package:ybm/meta/utils/math_utils.dart';
@@ -100,16 +101,57 @@ class RegisterScreen extends GetView<AuthController> {
               SizedBox(
                 height: getVerticalSize(25),
               ),
-              CustomTextFormField(
-                controller: controller.phone,
-                text: 'Phone Number',
-                prefix: Image.asset('assets/images/phoneIcon.png'),
-                keyboard: TextInputType.phone,
+              IntlPhoneField(
                 validator: (value) {
-                  if (value == null || value.isEmpty) return "Must enter a phone";
+                  if (value == null || value.number.isEmpty) {
+                    return "Field is required";
+                  }
                   return null;
                 },
+                onChanged: (value) {
+                  controller.phone = value.completeNumber;
+                },
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(10),
+                  hintText: "Phone number",
+                  hintStyle: GoogleFonts.nunito(
+                    fontWeight: FontWeight.w400,
+                    fontSize: getFontSize(14),
+                    color: textColor,
+                  ),
+                  fillColor: const Color(0xffF0F0F0),
+                  filled: true,
+                  counterText: "",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      width: 1.5,
+                      color: Color(0xffF0F0F0),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      width: 1.5,
+                      color: Colors.white60,
+                    ),
+                  ),
+                ),
               ),
+              // CustomTextFormField(
+              //   controller: controller.phone,
+              //   text: 'Phone Number',
+              //   prefix: Image.asset('assets/images/phoneIcon.png'),
+              //   keyboard: TextInputType.phone,
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) return "Must enter a phone";
+              //     return null;
+              //   },
+              // ),
               SizedBox(
                 height: getVerticalSize(25),
               ),

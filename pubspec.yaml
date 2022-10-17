@@ -54,6 +54,7 @@ dependencies:
   google_maps_place_picker_mb: ^2.0.0-mb.22
   google_maps_flutter: ^2.2.1
   fluttertoast: ^8.1.1
+  intl_phone_field: ^3.1.0
 
 dev_dependencies:
   flutter_test:
