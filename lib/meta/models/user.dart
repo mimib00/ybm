@@ -12,6 +12,7 @@ class Users {
   final bool agreed;
   final List<String> filters;
   final List<String> topics;
+  final List<String> ratings;
 
   Users(
     this.uid,
@@ -24,6 +25,7 @@ class Users {
     this.agreed,
     this.filters,
     this.topics,
+    this.ratings,
   );
 
   factory Users.fromJason(Map<String, dynamic> data, List<Business> businesses) {
@@ -38,6 +40,7 @@ class Users {
       data["agreed"] ?? false,
       data["filters"] == null ? [] : data["filters"].cast<String>(),
       data["topics"] == null ? [] : data["topics"].cast<String>(),
+      data["ratings"] == null ? [] : data["ratings"].cast<String>(),
     );
   }
 }
