@@ -36,6 +36,8 @@ class AuthController extends GetxController {
   final tag = TextEditingController();
   final vat = TextEditingController();
 
+  final pin = TextEditingController();
+
   File? photo;
 
   Rx<LatLng?> location = Rx(null);
@@ -58,6 +60,17 @@ class AuthController extends GetxController {
         ),
         zoom: 16,
       );
+  String verification = "";
+  void saveOtp(String value) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+    final PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
+      verificationId: verification,
+      smsCode: value,
+    );
+    currentUser.updatePhoneNumber(phoneCredential);
+    Get.offAllNamed(Routes.terms);
+  }
 
   void addPhotos(File image) {
     photos.add(image);
@@ -197,6 +210,7 @@ class AuthController extends GetxController {
         "email": email.text.trim(),
         "phone": phone.trim(),
         "username": username.text.trim(),
+        "plan": "free"
       };
       Map<String, dynamic> businessData = {
         "created_at": FieldValue.serverTimestamp(),
@@ -286,6 +300,7 @@ class AuthController extends GetxController {
       }
 
       Map<String, dynamic> updateData = {
+        "owner": user.uid,
         "business_image": companyImage,
         "images": FieldValue.arrayUnion(photosUrl),
         "proof": FieldValue.arrayUnion(proofsUrl),
@@ -312,10 +327,49 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> confirmPhone() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: user!.phone,
+        verificationCompleted: (phoneCredential) async {
+          saveOtp(phoneCredential.smsCode ?? "");
+          currentUser.updatePhoneNumber(phoneCredential);
+          pin.text = phoneCredential.smsCode ?? "";
+          await Future.delayed(const Duration(seconds: 2));
+          Get.offAllNamed(Routes.terms);
+          update();
+        },
+        verificationFailed: (exception) {},
+        codeSent: (verificationId, [forceResendingToken]) async {
+          verification = verificationId;
+        },
+        codeAutoRetrievalTimeout: (value) {},
+        timeout: const Duration(minutes: 2),
+      );
+    } on FirebaseAuthException catch (e) {
+      log(e.message.toString());
+      Fluttertoast.showToast(msg: e.code, backgroundColor: Colors.red);
+    }
+  }
+
+  Future<void> updateUser(Map<String, dynamic> data) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+      await FirebaseFirestore.instance.collection("users").doc(currentUser.uid).update(data);
+    } on FirebaseException catch (e) {
+      log(e.message.toString());
+      Fluttertoast.showToast(msg: e.code, backgroundColor: Colors.red);
+    }
+  }
+
   void reset() {
     name.clear();
     email.clear();
     phone = "";
+    pin.clear();
     username.clear();
     businessName.clear();
     businessDescription.clear();

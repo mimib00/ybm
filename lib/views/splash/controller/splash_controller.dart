@@ -9,9 +9,20 @@ class SplashController extends GetxController {
   void onInit() {
     FirebaseAuth.instance.authStateChanges().listen(
       (user) async {
-        if (user != null && user.phoneNumber != null) {
+        if (user != null) {
           await auth.getUserInfo();
-          Get.offAllNamed(Routes.root);
+          if (user.phoneNumber == null || user.phoneNumber!.isEmpty) {
+            auth.confirmPhone();
+            Get.offAllNamed(Routes.otp);
+          } else if (!auth.user!.agreed) {
+            Get.offAllNamed(Routes.terms);
+          } else if (auth.user!.topics.isEmpty) {
+            Get.offAllNamed(Routes.topics);
+          } else if (auth.user!.filters.isEmpty) {
+            Get.offAllNamed(Routes.filters);
+          } else {
+            Get.offAllNamed(Routes.root);
+          }
         } else {
           Get.offAllNamed(Routes.login);
         }
