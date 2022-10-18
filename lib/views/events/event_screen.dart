@@ -15,7 +15,7 @@ class EventScreen extends StatelessWidget {
     return Scaffold(
       body: ListView(
         children: [
-          PageName(pageName: 'Events'),
+          const PageName(pageName: 'Events'),
           const SizedBox(
             height: 23,
           ),

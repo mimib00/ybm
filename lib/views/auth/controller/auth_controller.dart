@@ -31,7 +31,7 @@ class AuthController extends GetxController {
 
   final businessName = TextEditingController();
   final businessDescription = TextEditingController();
-  final businessAddress = TextEditingController();
+  // final businessAddress = TextEditingController();
   final businessCategory = TextEditingController();
   final tag = TextEditingController();
   final vat = TextEditingController();
@@ -52,6 +52,7 @@ class AuthController extends GetxController {
 
   Users? user;
 
+  RxString address = "".obs;
   Completer<GoogleMapController> mapController = Completer();
   CameraPosition get cameraPosition => CameraPosition(
         target: LatLng(
@@ -61,6 +62,7 @@ class AuthController extends GetxController {
         zoom: 16,
       );
   String verification = "";
+
   void saveOtp(String value) {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
@@ -105,7 +107,7 @@ class AuthController extends GetxController {
 
   void setPhoto(File image) => photo = image;
 
-  void selectLocation(LatLng pos) async {
+  void selectLocation(LatLng pos, String addr) async {
     final GoogleMapController map = await mapController.future;
     location.value = pos;
     markers.add(
@@ -115,12 +117,13 @@ class AuthController extends GetxController {
       ),
     );
     map.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: pos, zoom: 16)));
+    address.value = addr;
     update();
   }
 
   Future<void> login() async {
     try {
-      Get.dialog(const Loading(message: "Loging in"), barrierDismissible: false);
+      Get.dialog(const Loading(), barrierDismissible: false);
       // get user email.
       final email = await getUserEmail(username.text.trim());
       if (email == null) {
@@ -216,7 +219,7 @@ class AuthController extends GetxController {
         "created_at": FieldValue.serverTimestamp(),
         "business_name": businessName.text.trim(),
         "business_description": businessDescription.text.trim(),
-        "business_address": businessAddress.text.trim(),
+        "business_address": address.value,
         "business_category": businessCategory.text.trim(),
         "business_image": null,
         "tags": tags,
@@ -373,8 +376,7 @@ class AuthController extends GetxController {
     username.clear();
     businessName.clear();
     businessDescription.clear();
-    businessAddress.clear();
-    businessAddress.clear();
+    // businessAddress.clear();
     tags.clear();
     photos.clear();
     proof.clear();

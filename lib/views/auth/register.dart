@@ -142,16 +142,6 @@ class RegisterScreen extends GetView<AuthController> {
                   ),
                 ),
               ),
-              // CustomTextFormField(
-              //   controller: controller.phone,
-              //   text: 'Phone Number',
-              //   prefix: Image.asset('assets/images/phoneIcon.png'),
-              //   keyboard: TextInputType.phone,
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) return "Must enter a phone";
-              //     return null;
-              //   },
-              // ),
               SizedBox(
                 height: getVerticalSize(25),
               ),
@@ -173,9 +163,10 @@ class RegisterScreen extends GetView<AuthController> {
               CustomElevatedButton(
                 text: 'Next',
                 onPressed: () {
-                  if (controller.registerForm.currentState!.validate()) {
-                    Get.toNamed(Routes.company);
-                  }
+                  // if (controller.registerForm.currentState!.validate()) {
+                  //   Get.toNamed(Routes.company);
+                  // }
+                  Get.toNamed(Routes.company);
                 },
               ),
               SizedBox(

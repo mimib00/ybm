@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sizer/sizer.dart';
+import 'package:ybm/core/controllers/location_controller.dart';
 import 'package:ybm/meta/utils/constants.dart';
 import 'package:ybm/meta/utils/math_utils.dart';
 import 'package:ybm/meta/widgets/custom_elevated_button.dart';
@@ -108,50 +109,104 @@ class CompanyProfile extends GetView<AuthController> {
                     return null;
                   },
                 ),
-                SizedBox(
-                  height: getVerticalSize(25),
-                ),
-                CustomTextFormField(
-                  controller: controller.businessAddress,
-                  text: 'Business Address',
-                  prefix: Image.asset('assets/images/userIcon.png'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Must enter a Address";
-                    return null;
-                  },
-                ),
+                // SizedBox(
+                //   height: getVerticalSize(25),
+                // ),
+                // CustomTextFormField(
+                //   controller: controller.businessAddress,
+                //   text: 'Business Address',
+                //   prefix: Image.asset('assets/images/userIcon.png'),
+                //   validator: (value) {
+                //     if (value == null || value.isEmpty) return "Must enter a Address";
+                //     return null;
+                //   },
+                // ),
                 SizedBox(
                   height: getVerticalSize(25),
                 ),
                 Obx(
                   () {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: SizedBox(
-                        height: 200,
-                        width: 100.w,
-                        child: GoogleMap(
-                          onTap: (position) {
-                            Get.to(
-                              () => LocationPicker(
-                                onSelect: (value) {
-                                  controller.selectLocation(
-                                    LatLng(value.geometry!.location.lat, value.geometry!.location.lng),
-                                  );
-                                },
-                                initialPosition: position,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Visibility(
+                          visible: controller.address.value.isNotEmpty,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Business Address',
+                                style: GoogleFonts.poppins(
+                                  fontSize: getFontSize(14),
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
                               ),
-                            );
-                          },
-                          initialCameraPosition: controller.cameraPosition,
-                          markers: controller.markers.value,
-                          zoomControlsEnabled: false,
-                          zoomGesturesEnabled: false,
-                          onMapCreated: (GoogleMapController ctrl) {
-                            controller.mapController.complete(ctrl);
-                          },
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                // width: 100.w,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffF0F0F0),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(controller.address.value),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: getVerticalSize(25),
+                        ),
+                        Text(
+                          'Select business address by clicking on the map',
+                          style: GoogleFonts.poppins(
+                            fontSize: getFontSize(10),
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(
+                          height: getVerticalSize(5),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                            height: 200,
+                            width: 100.w,
+                            child: GoogleMap(
+                              onTap: (position) {
+                                Get.to(
+                                  () => LocationPicker(
+                                    onSelect: (value) {
+                                      final LocationController locationController = Get.find();
+                                      controller.selectLocation(
+                                        LatLng(
+                                          value.geometry?.location.lat ?? locationController.locationData!.latitude!,
+                                          value.geometry?.location.lng ?? locationController.locationData!.longitude!,
+                                        ),
+                                        value.formattedAddress ?? "",
+                                      );
+                                    },
+                                    initialPosition: position,
+                                  ),
+                                );
+                              },
+                              initialCameraPosition: controller.cameraPosition,
+                              markers: controller.markers,
+                              zoomControlsEnabled: false,
+                              zoomGesturesEnabled: false,
+                              scrollGesturesEnabled: false,
+                              tiltGesturesEnabled: false,
+                              rotateGesturesEnabled: false,
+                              onMapCreated: (GoogleMapController ctrl) {
+                                controller.mapController.complete(ctrl);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
