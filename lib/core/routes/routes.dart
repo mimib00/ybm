@@ -9,6 +9,7 @@ import 'package:ybm/views/auth/plans.dart';
 import 'package:ybm/views/auth/register.dart';
 import 'package:ybm/views/auth/terms.dart';
 import 'package:ybm/views/auth/thanks_screen.dart';
+import 'package:ybm/views/events/event_tickets.dart';
 import 'package:ybm/views/offers/create_offer.dart';
 import 'package:ybm/views/root/root.dart';
 import 'package:ybm/views/setup/filters.dart';
@@ -30,6 +31,7 @@ class Routes {
   static const topics = "/topics";
   static const filters = "/filters";
   static const offersAdd = "/offers_add";
+  static const eventTicket = "/eventTicket";
 
   static List<GetPage> allRoutes = [
     GetPage(name: root, page: () => const RootScreen(), binding: NavigationBinding()),
@@ -46,5 +48,6 @@ class Routes {
     GetPage(name: topics, page: () => const TopicsScreen(), binding: SetupBinding()),
     GetPage(name: filters, page: () => const FiltersScreen()),
     GetPage(name: offersAdd, page: () => const CreateOfferScreen()),
+    GetPage(name: eventTicket, page: () => const EventTickets()),
   ];
 }

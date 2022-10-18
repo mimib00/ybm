@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ybm/core/routes/routes.dart';
 import 'package:ybm/meta/utils/constants.dart';
 import 'package:ybm/meta/widgets/gradient_text.dart';
 import 'package:ybm/meta/widgets/page_name.dart';
@@ -113,7 +114,7 @@ class EventScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: GestureDetector(
-        // onTap: () => Get.toNamed(AppLinks.eventTicket),
+        onTap: () => Get.toNamed(Routes.eventTicket),
         child: Container(
           height: 150,
           width: 374,
