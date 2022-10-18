@@ -91,7 +91,9 @@ class LoginScreen extends GetView<AuthController> {
               CustomElevatedButton(
                 text: 'Login',
                 onPressed: () {
-                  controller.login();
+                  if (controller.loginForm.currentState!.validate()) {
+                    controller.login();
+                  }
                 },
               ),
               SizedBox(
