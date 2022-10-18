@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Business {
   final String id;
+  final String owner;
   final String name;
   final String description;
   final String address;
@@ -15,6 +16,7 @@ class Business {
   Business(
     this.id,
     this.name,
+    this.owner,
     this.description,
     this.address,
     this.photo,
@@ -27,6 +29,7 @@ class Business {
   factory Business.fromJson(Map<String, dynamic> data) {
     return Business(
       data["id"],
+      data["owner"] ?? "",
       data["business_name"],
       data["business_description"],
       data["business_address"],

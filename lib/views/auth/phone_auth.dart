@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:ybm/meta/utils/constants.dart';
 import 'package:ybm/meta/utils/math_utils.dart';
-import 'package:ybm/meta/widgets/custom_elevated_button.dart';
 import 'package:ybm/meta/widgets/gradient_text.dart';
 import 'package:ybm/views/auth/controller/auth_controller.dart';
 
