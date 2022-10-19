@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -464,17 +463,18 @@ class CompanyProfile extends GetView<AuthController> {
                 CustomElevatedButton(
                   text: 'Confirm',
                   onPressed: () async {
-                    if (controller.companyForm.currentState!.validate()) {
-                      if (controller.photo == null) {
-                        Fluttertoast.showToast(msg: "Must provide company image");
-                      } else if (controller.location.value == null) {
-                        Fluttertoast.showToast(msg: "Must select business location");
-                      } else if (controller.photos.isEmpty) {
-                        Fluttertoast.showToast(msg: "Must provide images");
-                      } else {
-                        await controller.register();
-                      }
-                    }
+                    // if (controller.companyForm.currentState!.validate()) {
+                    //   if (controller.photo == null) {
+                    //     Fluttertoast.showToast(msg: "Must provide company image");
+                    //   } else if (controller.location.value == null) {
+                    //     Fluttertoast.showToast(msg: "Must select business location");
+                    //   } else if (controller.photos.isEmpty) {
+                    //     Fluttertoast.showToast(msg: "Must provide images");
+                    //   } else {
+                    //     await controller.register();
+                    //   }
+                    // }
+                    await controller.register();
                   },
                 ),
                 SizedBox(

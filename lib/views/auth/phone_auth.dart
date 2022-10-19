@@ -1,11 +1,12 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:ybm/meta/utils/constants.dart';
 import 'package:ybm/meta/utils/math_utils.dart';
+import 'package:ybm/meta/widgets/custom_elevated_button.dart';
 import 'package:ybm/meta/widgets/gradient_text.dart';
 import 'package:ybm/views/auth/controller/auth_controller.dart';
 
@@ -14,18 +15,19 @@ class PhoneAuth extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.confirmPhone();
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: getVerticalSize(90),
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: GestureDetector(
-          onTap: () => Get.back(),
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
+        // leading: GestureDetector(
+        //   onTap: () => Get.back(),
+        //   child: const Icon(
+        //     Icons.arrow_back_ios,
+        //     color: Colors.black,
+        //   ),
+        // ),
         centerTitle: true,
         title: Image.asset(
           'assets/images/groupLogo.png',
@@ -88,38 +90,67 @@ class PhoneAuth extends GetView<AuthController> {
               SizedBox(
                 height: getVerticalSize(260),
               ),
-              // Obx(
-              //   () {
-              //     return Visibility(
-              //       visible: controller.otp.value.length == 6,
-              //       child: CustomElevatedButton(
-              //         text: 'Verify',
-              //         onPressed: () {
-              //           // Get.toNamed(Routes.plans);
-              //         },
-              //       ),
-              //     );
-              //   },
-              // ),
-              // SizedBox(
-              //   height: getVerticalSize(50),
-              // ),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: GoogleFonts.nunito(
-                    fontSize: getFontSize(14),
-                  ),
-                  children: [
-                    const TextSpan(text: "Don’t Receive Code? ", style: TextStyle(color: Colors.black)),
-                    TextSpan(
-                      text: "Resend Code",
-                      recognizer: TapGestureRecognizer()..onTap = () {},
-                      style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w700),
+              Obx(
+                () {
+                  return Visibility(
+                    visible: controller.otp.value.length == 6,
+                    child: CustomElevatedButton(
+                      text: 'Verify',
+                      onPressed: () {
+                        controller.confirmNumber();
+                      },
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
+              SizedBox(
+                height: getVerticalSize(50),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don’t Receive Code? ",
+                    style: GoogleFonts.nunito(
+                      fontSize: getFontSize(14),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      controller.confirmPhone();
+                      Fluttertoast.showToast(msg: "Resending...");
+                    },
+                    child: Text(
+                      "Resend Code",
+                      style: GoogleFonts.nunito(
+                        fontSize: getFontSize(14),
+                        color: secondaryColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+              // RichText(
+              //   textAlign: TextAlign.center,
+              //   text: TextSpan(
+              //     style: GoogleFonts.nunito(
+              //       fontSize: getFontSize(14),
+              //     ),
+              //     children: [
+              //       const TextSpan(text: "Don’t Receive Code? ", style: TextStyle(color: Colors.black)),
+              //       TextSpan(
+              //         text: "Resend Code",
+              //         recognizer: TapGestureRecognizer()
+              //           ..onTap = () {
+              //             controller.confirmPhone();
+              //             Fluttertoast.showToast(msg: "Resending...");
+              //           },
+              //         style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w700),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),

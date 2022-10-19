@@ -53,6 +53,8 @@ class AuthController extends GetxController {
   Users? user;
 
   RxString address = "".obs;
+  RxString otp = "".obs;
+
   Completer<GoogleMapController> mapController = Completer();
   CameraPosition get cameraPosition => CameraPosition(
         target: LatLng(
@@ -62,8 +64,15 @@ class AuthController extends GetxController {
         zoom: 16,
       );
   String verification = "";
+  int? resendToken;
 
   void saveOtp(String value) {
+    otp.value = value;
+    update();
+  }
+
+  void confirmNumber() async {
+    String value = otp.value;
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
     final PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
@@ -132,7 +141,10 @@ class AuthController extends GetxController {
       }
       // login user.
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password.text.trim());
+      await getUserInfo();
+
       Get.back();
+      Get.offAllNamed(Routes.otp);
     } on FirebaseException catch (e) {
       Get.back();
       log(e.message.toString());
@@ -142,8 +154,14 @@ class AuthController extends GetxController {
 
   Future<void> getUserInfo() async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser!;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
       final userSnap = await FirebaseFirestore.instance.collection("users").doc(currentUser.uid).get();
+      if (!userSnap.exists) {
+        await FirebaseAuth.instance.signOut();
+        return;
+      }
       final businessSnap = await FirebaseFirestore.instance
           .collection("users")
           .doc(currentUser.uid)
@@ -223,35 +241,41 @@ class AuthController extends GetxController {
         "business_category": businessCategory.text.trim(),
         "business_image": null,
         "tags": tags,
-        "location": GeoPoint(location.value!.latitude, location.value!.longitude),
+        "location": GeoPoint(location.value?.latitude ?? 0, location.value?.longitude ?? 0),
         "vat": vat.text.trim(),
         "images": [],
         "proof": [],
       };
       // create user
-      log({email.text.trim(), password.text.trim()}.toString());
-      final UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
+
       if (credential.user == null) return;
 
       final user = credential.user!;
 
-      // add user data to firestore
+      log(user.uid);
+      log(userData.toString());
+      log(businessData.toString());
 
-      await FirebaseFirestore.instance.collection("users").doc(user.uid).set(userData);
+      // add user data to firestore
+      await FirebaseFirestore.instance.collection("users").doc(user.uid).set(userData).catchError(
+            (error) => log(error.toString()),
+          );
       // add business to firestore
       final business =
           await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("businesses").add(businessData);
 
       // upload company image
-      final companySnapshot = await storageRef.child('business/${business.id}').putFile(
-            photo!,
-            SettableMetadata(
-              contentType: "image/jpeg",
-            ),
-          );
+      final companySnapshot =
+          await storageRef.child('business/${business.id}/${DateTime.now().microsecondsSinceEpoch}').putFile(
+                photo!,
+                SettableMetadata(
+                  contentType: "image/jpeg",
+                ),
+              );
 
       if (companySnapshot.state == TaskState.error || companySnapshot.state == TaskState.canceled) {
         throw "There was an error during upload";
@@ -318,11 +342,12 @@ class AuthController extends GetxController {
       await FirebaseAuth.instance.signOut();
 
       // send to login
+
       Get.back();
       Fluttertoast.showToast(msg: "Account created", backgroundColor: Colors.green);
-      await Future.delayed(const Duration(seconds: 2));
       reset();
-      Get.offAllNamed(Routes.login);
+      await FirebaseAuth.instance.signOut();
+      Get.toNamed(Routes.login);
     } on FirebaseException catch (e) {
       Get.back();
       log(e.message.toString());
@@ -347,9 +372,13 @@ class AuthController extends GetxController {
         verificationFailed: (exception) {},
         codeSent: (verificationId, [forceResendingToken]) async {
           verification = verificationId;
+          resendToken = forceResendingToken;
         },
-        codeAutoRetrievalTimeout: (value) {},
+        codeAutoRetrievalTimeout: (verificationId) {
+          verification = verificationId;
+        },
         timeout: const Duration(minutes: 2),
+        forceResendingToken: resendToken,
       );
     } on FirebaseAuthException catch (e) {
       log(e.message.toString());
@@ -376,7 +405,6 @@ class AuthController extends GetxController {
     username.clear();
     businessName.clear();
     businessDescription.clear();
-    // businessAddress.clear();
     tags.clear();
     photos.clear();
     proof.clear();

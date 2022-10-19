@@ -163,10 +163,9 @@ class RegisterScreen extends GetView<AuthController> {
               CustomElevatedButton(
                 text: 'Next',
                 onPressed: () {
-                  // if (controller.registerForm.currentState!.validate()) {
-                  //   Get.toNamed(Routes.company);
-                  // }
-                  Get.toNamed(Routes.company);
+                  if (controller.registerForm.currentState!.validate()) {
+                    Get.toNamed(Routes.company);
+                  }
                 },
               ),
               SizedBox(
